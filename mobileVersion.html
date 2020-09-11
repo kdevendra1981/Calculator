@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Changa:wght@500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(16, 29, 36);
+        }
+
+        .calcBody {
+            border-radius: 20px;
+            /* border: 1px solid black; */
+            background-color: rgb(7, 7, 7);
+            /* border:3px solid turquoise; */
+            height: 20rem;
+            width: 23rem;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-direction: column;
+            box-shadow: rgb(132, 255, 255) .2rem .2rem 2rem;
+
+        }
+
+        .screen {
+            display: flex;
+        }
+
+        .screen input[type=text] {
+            text-align: right;
+            color: rgb(0, 0, 0);
+            background-color: turquoise;
+            box-sizing: border-box;
+            /* border: 1px solid rgb(179, 244, 255); */
+            border-radius: 10px;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            margin-right: .5rem;
+            box-shadow: rgb(132, 255, 255) 0rem 0rem 1rem;
+
+
+        }
+
+        .inputClass {
+            font-family: 'Changa', sans-serif;
+            font-size: 2.4rem;
+            height: 3rem;
+            width: 19rem;
+            padding: 0.5rem;
+            border: 1px solid black;
+        }
+
+        .operator {
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 1.5rem;
+            height: 2rem;
+            width: 1.7rem;
+            text-align: left;
+            align-self: flex-end;
+            font-weight: 1000;
+            color: rgb(142, 242, 255);
+            text-shadow: rgb(211, 211, 211) 0rem 0rem 1rem;
+        }
+
+        .buttonBlock {
+            box-sizing: border-box;
+        }
+
+        button {
+            font-size: 1rem;
+            background-color: rgb(0, 0, 0);
+            border-radius: 15px;
+            color: rgb(142, 242, 255);
+            text-shadow: rgb(211, 211, 211) 0rem 0rem 1rem;
+            box-shadow: rgb(132, 255, 255) 0rem 0rem .2rem;
+            height: 1.8rem;
+            width: 4.7rem;
+            margin: .2rem;
+            border: none
+        }
+
+        button:hover {
+            background-color: turquoise;
+            color: black;
+        }
+
+        .screen input[type=text]:hover {
+            background-color: black;
+            color: turquoise;
+        }
+
+        .onOff {
+            background-color: rgb(39, 38, 38);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="calcBody">
+        <div class="screen">
+            <input type="text" class="inputClass" id="calcDisplay" placeholder="0">
+            <p class="operator" id="operator"></p>
+        </div>
+        <div class="buttonBlock">
+            <table>
+                <tr>
+                    <td><button class="onOff">Check</button></td>
+                    <td><button>% </button></td>
+                    <td><button>&#17 </button></td>
+                    <td><button> &divide</button></td>
+                </tr>
+                <tr>
+                    <td><button>7 </button></td>
+                    <td><button>8 </button></td>
+                    <td><button>9 </button></td>
+                    <td><button>x</button></td>
+                </tr>
+                <tr>
+                    <td><button> 4</button></td>
+                    <td><button> 5</button></td>
+                    <td><button> 6</button></td>
+                    <td><button> -</button></td>
+                </tr>
+                <tr>
+                    <td><button> 1</button></td>
+                    <td><button> 2</button></td>
+                    <td><button> 3</button></td>
+                    <td><button> +</button></td>
+                </tr>
+                <tr>
+                    <td><button> C</button></td>
+                    <td><button> 0</button></td>
+                    <td><button> .</button></td>
+                    <td><button> =</button></td>
+                </tr>
+
+            </table>
+
+        </div>
+    </div>
+</body>
+<script>
+
+
+    //get the display screen element
+    let screen = document.querySelector("input");
+    let calcString = ''
+    let clrScreen = undefined
+    let myArray = []
+    let result = 0
+    let operator = document.getElementById("operator")
+
+    screen.addEventListener("input", () => {
+        //if length of digits reaches 12 it will be blocked for editing so no more number are entered
+        if (screen.value.length > 12) {
+            screen.readOnly = true;
+            console.log(screen.readOnly);
+        }
+    })
+    //get all the buttons from calculator
+    let btns = document.getElementsByTagName("button")
+
+    //
+    let refresh = undefined //it will be true if you press "=", so that next value will come in new screen and will clear the calculation strint(calcString) and add only result to it
+    for (btn of btns) { //loop through all the buttons
+        btn.addEventListener("click", (e) => {  //event will be fired if any button is pressed
+            if (refresh) {
+                screen.value = ''
+                setTimeout(() => {
+                    myArray = [];
+                }, 0);
+                calcString = ''
+                refresh = false;
+
+            }
+            if (clrScreen) {
+                screen.value = ''
+                clrScreen = false
+            }
+            btnText = e.target.innerText;  //this gets the inner text of the button which is pressed
+            if (btnText == '.') {
+                calcString = calcString.concat(".") //concatnate the "." to the digits to calcString
+                screen.value += "."; //concatnate the "." to the digits to screen 
+            }
+            else if (btnText == 'C') {
+                screen.value = '';
+                calcString = ''
+                operator.innerText = '';
+                myArray = []
+            }
+
+            else if (btnText == '+') { clickOperators("+") }
+            else if (btnText == '-') { clickOperators("-") }
+            else if (btnText == 'x') { clickOperators("*") }
+            else if (btnText == '÷') { clickOperators("/") }
+
+
+            else if (btnText == '%' && calcString != "") {
+                myArray.push(screen.value)
+                screen.value = validateForScreen(eval(calcString) / 100)
+                myArray.push("%")
+                operator.innerText = "%"
+                myArray.push(screen.value)
+                calcString = eval(calcString) / 100
+                recheckOb = recheck(myArray)
+                refresh = true;
+            }
+            else if (btnText == '=') {
+                myArray.push(screen.value)
+                if (ifCalculatable(calcString)) { screen.value = Calculation(calcString) }
+                myArray.push("=")
+                myArray.push(screen.value)
+                result = screen.value;
+                operator.innerText = "="
+                recheckOb = recheck(myArray)
+                calcString = (screen.value == Infinity) ? "" : screen.value
+                refresh = true;
+            }
+            else if (btnText == '') {
+                if (screen.value != "") {
+                    calcString = calcString.slice(0, -1);
+                    screen.value = screen.value.slice(0, -1);
+
+                }
+            }
+            else if (btnText == "Check") {
+                operator.innerText = ''
+                console.log('btnText :>> ', btnText);
+                val = recheckOb.next().value;
+                if (val != undefined) {
+                    screen.value = val
+                }
+
+            }
+            else if (btnText != '%') {
+                // if ((parseInt(btnText) >= 0) && (parseInt(btnText)< 10)){
+                screen.value += btnText;
+                calcString = calcString.concat(btnText)
+                operator.innerText = '';
+            }
+            console.log('myArray :>> ', myArray);
+            console.log('calcString :>> ', calcString);
+
+        })
+    }
+
+    //checking if last charactor of calcString is an +,-,*,/, operator or not 
+    function checkIfLastCharSymbol(mystr) {
+        if (Number.isInteger(parseInt(mystr.slice(-1))) || (mystr.slice(-1) == ".")) { return true }
+        else { return false }
+    }
+
+    //calculation the result and also checking if the result fits is 12digit or not 
+    function Calculation(calString) {
+        if (eval(calString) > 999999999999) {
+            return eval(calString).toPrecision(2);
+        } else if (eval(calString).toString().length > 12) {
+            myString = eval(calString).toString();
+            l = myString.length;
+            pos = myString.indexOf(".");
+            if (pos >= 12) {
+                return eval(calString).toPrecision(2);
+            }
+            else if (pos > 0) {
+                placesAfterDot = 12 - pos;
+                return eval(calString).toFixed(placesAfterDot - 1);
+            }
+        }
+        else {
+            return eval(calString)
+        }
+
+    }
+    //validating for % button if the result fits in 12 digits or not
+    function validateForScreen(calString) {
+        if (eval(calString) > 999999999999) {
+            return calString.toPrecision(2);
+        } else if (calString.toString().length > 12) {
+            myString = calString.toString();
+            l = myString.length;
+            pos = myString.indexOf(".");
+            if (pos >= 12) {
+                return calString.toPrecision(2);
+            }
+            else if (pos > 0) {
+                placesAfterDot = 12 - pos;
+                return calString.toFixed(placesAfterDot - 1);
+            }
+        }
+        else {
+            return calString
+        }
+
+    }
+    function* recheck(myA) {
+        console.log("Entered in function", myA)
+        for (i = 0; i < myA.length; i++) {
+            yield myA[i]
+            if (i == myA.length - 1) { i = -1 }
+        }
+    }
+
+    function ifCalculatable(str) {
+        let re = /\d*.?\d*[+\-*/]{1}\d*.?\d*/;
+        if (str.search(re) >= 0) {
+            console.log("true")
+            return true
+        } else {
+            console.log("false")
+            return false
+        }
+
+    }
+
+    function clickOperators(opr) {
+        if (opr == '*') { symbol = "X" }
+        else if (opr == "/") { symbol = "÷" }
+        else (symbol = opr)
+        if (calcString== ""){
+            calcString = result
+        }
+        if (checkIfLastCharSymbol(calcString) && calcString != "") {
+            if (ifCalculatable(calcString)) {
+                myArray.push(screen.value)
+                myArray.push("=")
+                screen.value = Calculation(calcString);
+                calcString = screen.value;
+            }
+            calcString = calcString.concat(opr)
+            myArray.push(screen.value)
+            myArray.push(symbol)
+            operator.innerText = symbol;
+            clrScreen = true;
+        }
+        else if (calcString != "") {
+            calcString = calcString.slice(0, -1)
+            if (ifCalculatable(calcString)) {
+                // myArray.push("=")
+                myArray.push(screen.value)
+                screen.value = Calculation(calcString);
+                calcString = screen.value;
+            }
+            calcString = calcString.concat(opr)
+            myArray.push(screen.value)
+            myArray.push(symbol)
+            operator.innerText = symbol;
+            clrScreen = true;
+        }
+    }
+</script>
+
+</html>
